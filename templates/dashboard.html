@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - DocApp{% endblock %}
+
+{% block content %}
+<h2>Dashboard</h2>
+<h3>Upload Document</h3>
+<form method="POST" enctype="multipart/form-data" action="{{ url_for('upload_document') }}" class="mb-4">
+    <div class="mb-3">
+        <label for="file" class="form-label">Choose File</label>
+        <input type="file" class="form-control" id="file" name="file" accept=".pdf" required>
+    </div>
+    <button type="submit" class="btn btn-primary">Upload PDF</button>
+</form>
+
+<h3>Your Documents</h3>
+{% if docs %}
+    <div class="row">
+        {% for doc in docs %}
+            <div class="col-md-12 mb-3">
+                <div class="doc-item card">
+                    <div class="card-body">
+                        <h6 class="card-title">{{ doc.filename }}</h6>
+                        <p class="doc-meta">Uploaded: {{ doc.upload_date[:19] }}</p>
+                        <div class="d-flex gap-2 flex-wrap">
+                            <form method="POST" action="{{ url_for('analyze_document', doc_id=doc.id) }}" style="display: inline;" class="me-2">
+                                <button type="submit" class="btn btn-outline-secondary btn-sm">Analyze</button>
+                            </form>
+                            <form method="POST" action="{{ url_for('sign_document', doc_id=doc.id) }}" style="display: inline;" class="me-2">
+                                <div class="input-group input-group-sm" style="width: 200px;">
+                                    <input type="text" name="signature" class="form-control" placeholder="Your signature" required>
+                                    <button class="btn btn-outline-secondary" type="submit">Sign</button>
+                                </div>
+                            </form>
+                            <a href="{{ url_for('download_document', doc_id=doc.id) }}" class="btn btn-outline-primary btn-sm me-2" download>Download</a>
+                            <a href="{{ url_for('view_document', doc_id=doc.id) }}" class="btn btn-outline-info btn-sm me-2">View</a>
+                            <form method="POST" action="{{ url_for('delete_document', doc_id=doc.id) }}" style="display: inline;" onsubmit="return confirm('Are you sure you want to delete {{ doc.filename }}?');" class="ms-2">
+                                <button type="submit" class="btn btn-outline-danger btn-sm">Delete</button>
+                            </form>
+                        </div>
+                        {% if doc.analysis %}
+                            <p class="mt-2"><strong>Analysis:</strong> {{ doc.analysis[:100] }}...</p>
+                        {% endif %}
+                        {% if doc.signature %}
+                            <p class="mt-1 doc-meta"><strong>Signed:</strong> {{ doc.signature }} on {{ doc.signed_date[:19] }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="alert alert-info">
+        <h5>No documents yet</h5>
+        <p>Upload your first PDF to get started with analysis and e-signing.</p>
+    </div>
+{% endif %}
+{% endblock %}

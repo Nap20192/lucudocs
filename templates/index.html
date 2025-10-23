@@ -1,0 +1,25 @@
+<!-- templates/index.html -->
+{% extends "base.html" %}
+
+{% block title %}Home - DocApp{% endblock %}
+
+{% block content %}
+<div class="text-center">
+    <h1 class="mb-4">Welcome to DocApp</h1>
+    <p class="lead">Your AI-powered document management solution.</p>
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Get Started</h5>
+                    <p class="card-text">Register or log in to upload, analyze, and sign documents securely.</p>
+                    {% if not session.user_id %}
+                        <a href="{{ url_for('register_page') }}" class="btn btn-primary me-2">Register</a>
+                        <a href="{{ url_for('login_page') }}" class="btn btn-outline-primary">Login</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
